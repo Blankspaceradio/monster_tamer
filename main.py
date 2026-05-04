@@ -34,17 +34,23 @@ def main():
         ["Buy", "Sell", "Back"], menu_font, 100, 150
     )
     shop_inventory_menu = Menu(
-        shop_items, 
+        lambda: shop_items, 
         menu_font, 
         300, 
         150,
         formatter=lambda item: f"{item.name} - ${item.price}" 
     )
     player_inventory_menu = Menu(
-        list(player.inventory.keys()),
+        lambda: list(player.inventory.keys()),
         menu_font,
         300, 150,
         formatter=lambda item:inventory_formatter(item, player.inventory)
+    )
+    player_inventory_sell_menu = Menu(
+        list(player.inventory.keys()),
+        menu_font,
+        300,150,
+        formatter=lambda item:inventory_formatter_sell(item, player.inventory)
     )
 
     state = MENU_TITLE
@@ -104,7 +110,7 @@ def main():
                         active_menu = "shop inventory"
                     
                     elif result == "Sell":
-                        print("selling not implemented yet")
+                        active_menu = "player sell"
                     
                     elif result == "Back":
                         state = MENU_MAIN
@@ -124,6 +130,15 @@ def main():
                             previous_state = state
                             state = POPUP
                             continue
+                elif active_menu == "player sell":
+                    result = shop_inventory_menu.handle_input(event)
+
+                    if event.type == pygame.KEYDOWN and event.key in (pygame.K_ESCAPE, pygame.K_BACKSPACE):
+                        active_menu = "actions"
+                    
+                    elif result:
+                        if player.remove_item(result):
+                            player.add_gold(result.price//2)
 
         
         screen.fill("black")

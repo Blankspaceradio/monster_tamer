@@ -2,7 +2,11 @@ import pygame
 
 class Menu:
     def __init__(self, options, font, x, y, spacing=50, formatter=None, context = None):
-        self.options = options
+        if callable(options):
+            self.options_fn = options
+        else:
+            self.options_fn = lambda: options
+        
         self.font = font
         self.x = x
         self.y = y
@@ -13,22 +17,23 @@ class Menu:
         self.context = context
 
     def handle_input(self, event):
+        options = self.options_fn()
         if event.type != pygame.KEYDOWN:
             return None
 
         if event.key == pygame.K_UP:
-            self.selected = (self.selected - 1) % len(self.options)
+            self.selected = (self.selected - 1) % len(options)
 
         elif event.key == pygame.K_DOWN:
-            self.selected = (self.selected + 1) % len(self.options)
+            self.selected = (self.selected + 1) % len(options)
 
         elif event.key == pygame.K_RETURN:
-            return self.options[self.selected]
+            return options[self.selected]
 
         return None
 
     def titleDraw(self, screen):
-        for i, option in enumerate(self.options):
+        for i, option in enumerate(self.options_fn()):
             y = self.y + i * self.spacing
 
             text = self.font.render(option, False, (255, 0, 0))
@@ -41,9 +46,10 @@ class Menu:
                 screen.blit(arrow, arrow_rect)
     
     def draw(self, screen, active=True):
+        options = self.options_fn()
         color = (255, 0, 0) if active else (100, 100, 100)
 
-        for i, option in enumerate(self.options):
+        for i, option in enumerate(options):
             y = self.y + i * self.spacing
 
             label = self.formatter(option)

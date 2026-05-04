@@ -46,3 +46,6 @@ class Player:
 
 def inventory_formatter(item,inventory):
     return f"{item.name}: {inventory[item]}"
+
+def inventory_formatter_sell(item,inventory):
+    return f"{item.name}: {inventory[item]}     sell for: ${item.price//2}"
