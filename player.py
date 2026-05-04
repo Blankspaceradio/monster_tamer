@@ -11,11 +11,11 @@ class Player:
 
         self.inventory = {}
 
-    def add_item(self, item, quanitity = 1):
+    def add_item(self, item, quantity = 1):
         if item in self.inventory:
-            self.inventory[item] += quanitity
+            self.inventory[item] += quantity
         else:
-            self.inventory[item] = quanitity
+            self.inventory[item] = quantity
 
     def remove_item(self,item, quantity=1):
         if item in self.inventory:
@@ -24,7 +24,7 @@ class Player:
                 del self.inventory[item]
     
     def has_item(self, item, quantity=1):
-        return self.iventory.get(item,0) >= quantity
+        return self.inventory.get(item,0) >= quantity
     
     def add_gold(self, amount):
         self.gold += amount
@@ -42,3 +42,7 @@ class Player:
         else:
             self.storage.append(monster)
             return False
+
+
+def inventory_formatter(item,inventory):
+    return f"{item.name}: {inventory[item]}"

@@ -1,7 +1,7 @@
 import pygame
 
 class Menu:
-    def __init__(self, options, font, x, y, spacing=50, formatter=None):
+    def __init__(self, options, font, x, y, spacing=50, formatter=None, context = None):
         self.options = options
         self.font = font
         self.x = x
@@ -10,6 +10,7 @@ class Menu:
         self.selected = 0
 
         self.formatter = formatter if formatter else lambda x: str(x)
+        self.context = context
 
     def handle_input(self, event):
         if event.type != pygame.KEYDOWN:
@@ -54,3 +55,21 @@ class Menu:
                 arrow = self.font.render(">", False, (255, 0, 255))
                 arrow_rect = arrow.get_rect(midright=(text_rect.left - 10, text_rect.centery))
                 screen.blit(arrow, arrow_rect)
+
+def draw_popup(screen,font,message):
+        #dark overlay
+    overlay = pygame.Surface(screen.get_size())
+    overlay.set_alpha(180)
+    overlay.fill((0,0,0))
+    screen.blit(overlay,(0,0))
+
+        #popup box
+    rect = pygame.Rect(0,0, 400, 200)
+    rect.center = screen.get_rect().center
+    pygame.draw.rect(screen, (50,50,50),rect)
+    pygame.draw.rect(screen, (255,255,255), rect,2)
+
+        #text
+    text = font.render(message,True, (255,255,255))
+    text_rect = text.get_rect(center=rect.center)
+    screen.blit(text,text_rect)

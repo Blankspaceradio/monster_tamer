@@ -1,7 +1,7 @@
 import pygame
 from constants import *
 from logger import log_state
-from menus import Menu
+from menus import *
 from items import *
 from player import *
 
@@ -40,11 +40,18 @@ def main():
         150,
         formatter=lambda item: f"{item.name} - ${item.price}" 
     )
+    player_inventory_menu = Menu(
+        list(player.inventory.keys()),
+        menu_font,
+        300, 150,
+        formatter=lambda item:inventory_formatter(item, player.inventory)
+    )
 
     state = MENU_TITLE
    
     active_menu = "actions"
-
+    popup_message = None
+    previous_state = None
     
 
     while 1 < 2:
@@ -68,16 +75,33 @@ def main():
                 
                 if result == "Shop":
                     state = MENU_SHOP
+
+                elif result == "Inventory":
+                    state = MENU_PLAYER_INVENTORY
                 
                 elif result == "Back":
                     state = MENU_TITLE
+            
+            elif state == MENU_PLAYER_INVENTORY:
+                result = player_inventory_menu.handle_input(event)
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_MAIN
+                if menu_needs_refresh:
+                    player_inventory_menu = Menu(
+                        list(player.inventory.keys()),
+                        menu_font,
+                        300,
+                        150,
+                        formatter=lambda item: f"{item.name} x{player.inventory[item]}"
+                    )
+                    menu_needs_refresh = False
             
             elif state == MENU_SHOP:
                 if active_menu == "actions":
                     result = shop_actions_menu.handle_input(event)
 
                     if result == "Buy":
-                        active_menu = "inventory"
+                        active_menu = "shop inventory"
                     
                     elif result == "Sell":
                         print("selling not implemented yet")
@@ -85,17 +109,21 @@ def main():
                     elif result == "Back":
                         state = MENU_MAIN
 
-                elif active_menu == "inventory":
+                elif active_menu == "shop inventory":
                     result = shop_inventory_menu.handle_input(event)
 
-                    if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    if event.type == pygame.KEYDOWN and event.key in (pygame.K_ESCAPE, pygame.K_BACKSPACE):
                         active_menu = "actions"
 
                     elif result:
                         if player.spend_gold(result.price):
                             player.add_item(result)
+                            menu_needs_refresh = True
                         else:
-                            print("not enough gold")
+                            popup_message = "Not enough gold"
+                            previous_state = state
+                            state = POPUP
+                            continue
 
         
         screen.fill("black")
@@ -111,6 +139,12 @@ def main():
             screen.blit(text_main_title, text_rect_main_title)
             main_menu.draw(screen)
 
+        elif state == MENU_PLAYER_INVENTORY:
+            text_player_inventory_title = title_font.render('Inventory', False, (255, 0, 0))
+            text_rect_player_inventory_title = text_player_inventory_title.get_rect(center=(SCREEN_WIDTH//2, 100))
+            screen.blit(text_player_inventory_title, text_rect_player_inventory_title)
+            player_inventory_menu.draw(screen)
+
         elif state == MENU_SHOP:
             text_shop_title = title_font.render('Shop', False, (255, 0, 0))
             text_rect_shop_title = text_shop_title.get_rect(center=(SCREEN_WIDTH//2, 100))
@@ -121,6 +155,18 @@ def main():
             
             shop_actions_menu.draw(screen)
             shop_inventory_menu.draw(screen)
+
+        elif state == POPUP:
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_BACKSPACE, pygame.K_ESCAPE):
+                    state = previous_state
+            
+            if previous_state == MENU_SHOP:
+                shop_actions_menu.draw(screen)
+                shop_inventory_menu.draw(screen)
+            
+            draw_popup(screen,menu_font,popup_message)
+           
        
     
         pygame.display.flip()
