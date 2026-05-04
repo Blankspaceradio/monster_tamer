@@ -2,11 +2,12 @@ import pygame
 from constants import *
 from logger import log_state
 from menus import Menu
-from items import Item
+from items import *
+from player import *
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HIEGHT))
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     clock= pygame.time.Clock()
     dt = 0
 
@@ -15,15 +16,19 @@ def main():
     menu_font = pygame.font.SysFont('comicsans', 50)
 
 
+    #Basic player
+    player = Player("Mark")
+
+
     #Shop Items
-    shop_items = [Item("Catcher", 100), Item("Potion", 200),  Item("Weights", 300)]
+    shop_items = [CatchItem("Catcher", 100, 50), HealingItem("Potion", 200,20),  TrainingItem("Weights", 300, 5,"Power")]
 
     #Menus
     title_menu = Menu(
         ["Start Game", "Exit Game"], menu_font, SCREEN_WIDTH// 2, 250
     )
     main_menu = Menu(
-        ["Explore", "Manage Team", "Train", "Shop", "Back"], menu_font, 100, 150
+        ["Explore", "Manage Team", "Inventory", "Train", "Shop", "Back"], menu_font, 100, 150
     )
     shop_actions_menu = Menu(
         ["Buy", "Sell", "Back"], menu_font, 100, 150
@@ -86,8 +91,11 @@ def main():
                     if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
                         active_menu = "actions"
 
-                    elif result is not None:
-                        print("buying:", result) 
+                    elif result:
+                        if player.spend_gold(result.price):
+                            player.add_item(result)
+                        else:
+                            print("not enough gold")
 
         
         screen.fill("black")
@@ -106,7 +114,11 @@ def main():
         elif state == MENU_SHOP:
             text_shop_title = title_font.render('Shop', False, (255, 0, 0))
             text_rect_shop_title = text_shop_title.get_rect(center=(SCREEN_WIDTH//2, 100))
+            text_shop_gold = menu_font.render(f"${player.gold}", False, (255,0,0))
+            text_rect_gold = text_shop_gold.get_rect(center=(1100, 100))
+            screen.blit(text_shop_gold, text_rect_gold)
             screen.blit(text_shop_title, text_rect_shop_title)
+            
             shop_actions_menu.draw(screen)
             shop_inventory_menu.draw(screen)
        
