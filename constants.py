@@ -3,5 +3,7 @@ SCREEN_WIDTH = 1280
 MENU_TITLE = "title"
 MENU_MAIN = "main"
 MENU_TEAM = "team"
+MENU_SHOP = "shop"
+MENU_SHOP_INVENTORY = "shop inventory"
 GAME =  "game"
 QUIT = "quit"
