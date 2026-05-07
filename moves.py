@@ -57,8 +57,8 @@ class Move:
     
 
 
-tackle = Move("Tackle", power=10, cost=2, element="normal")
+tackle = Move("Tackle", power=10, cost=2, elements="normal")
 
-fireball = Move("Fireball", power=15, cost=5, element="fire")
+fireball = Move("Fireball", power=15, cost=5, elements="fire")
 
-heal = Move("Heal", power=20, cost=4, element="light", move_type="heal")
+heal = Move("Heal", power=20, cost=4, elements="light", move_type="heal")

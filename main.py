@@ -5,6 +5,7 @@ from menus import *
 from items import *
 from player import *
 from battle import *
+from explore import *
 
 def main():
     pygame.init()
@@ -20,6 +21,7 @@ def main():
     #Basic player
     player = Player("Mark")
 
+    
 
     #Shop Items
     shop_items = [CatchItem("Catcher", 100, 50), HealingItem("Potion", 200,20),  TrainingItem("Weights", 300, 5,"Power")]
@@ -53,6 +55,13 @@ def main():
         300,150,
         formatter=lambda item:inventory_formatter_sell(item, player.inventory)
     )
+    explore_menu = Menu(
+        lambda: [forest, mountain],
+        menu_font,
+        100,
+        100,
+        formatter=lambda area: area.name
+    )
 
 
 
@@ -84,7 +93,10 @@ def main():
             elif state == MENU_MAIN:
                 result = main_menu.handle_input(event)
                 
-                if result == "Shop":
+                if result == "Explore":
+                    state = MENU_EXPLORE
+                
+                elif result == "Shop":
                     state = MENU_SHOP
 
                 elif result == "Inventory":
@@ -142,6 +154,27 @@ def main():
             elif state == BATTLE:
                 Battle.handle_input(event)
                 Battle.darw(screen, menu_font)
+            
+            elif state == MENU_EXPLORE:
+                result = explore_menu.handle_input(event)
+
+                if result:
+                    selected_area = result
+                    encounters = selected_area.generate_encounters()
+                    state = MENU_ENCOUNTER
+                
+                encounter_menu = Menu(
+                    lambda: encounters,
+                    menu_font,
+                    300, 
+                    150,
+                    formatter=lambda monster: f"{monster.name} Lv{monster.level}"
+                )
+            
+            elif state == MENU_ENCOUNTER:
+                result = encounter_menu.handle_input(event)
+                if result:
+                    enemy_monster = result
 
                 
         
@@ -184,6 +217,15 @@ def main():
 
             shop_actions_menu.draw(screen)
             player_inventory_sell_menu.draw(screen)
+
+        elif state == MENU_EXPLORE:
+            text_explore_title = title_font.render('Explore', False, (255, 0, 0))
+            text_rect_explore_title = text_explore_title.get_rect(center=(SCREEN_WIDTH//2, 100))
+            screen.blit(text_explore_title, text_rect_explore_title)
+            explore_menu.draw(screen)
+        
+        elif state == MENU_ENCOUNTER:
+            encounter_menu.draw(screen)
 
         elif state == POPUP:
             if event.type == pygame.KEYDOWN:

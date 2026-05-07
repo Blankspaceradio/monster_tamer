@@ -17,3 +17,6 @@ PLAYER_TURN = "player_turn"
 ENEMY_TURN = "enemy_turn"
 ANIMATION = "animation"
 BATTLE_END  = "battle_end"
+
+MENU_EXPLORE = "explore"
+MENU_ENCOUNTER = "encounter"

@@ -66,4 +66,7 @@ class Monster:
         self.hp = self.max_hp
 
 
-testmon = Monster("testmon","fire", 1, 40, 20, 10, 15, 20, 25,[tackle, heal])
+testmon = Monster("Testmon","fire", 1, 40, 20, 10, 15, 20, 25,[tackle, heal])
+moxmon = Monster("Moxmon", "None", 3, 50, 15, 20, 30,40 ,50, [tackle, fireball])
+timon = Monster("Timon", "water", 3, 40, 20, 40, 30, 80, 10, [tackle, heal])
+huntmon = Monster("Huntmon", "earth", 1, 30, 20, 50, 40, 10, 20, [tackle, fireball])
