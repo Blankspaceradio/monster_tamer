@@ -4,6 +4,7 @@ from logger import log_state
 from menus import *
 from items import *
 from player import *
+from battle import *
 
 def main():
     pygame.init()
@@ -52,6 +53,10 @@ def main():
         300,150,
         formatter=lambda item:inventory_formatter_sell(item, player.inventory)
     )
+
+
+
+
 
     state = MENU_TITLE
    
@@ -133,6 +138,10 @@ def main():
                 elif result:
                     player.remove_item(result)
                     player.add_gold(result.price//2)
+
+            elif state == BATTLE:
+                Battle.handle_input(event)
+                Battle.darw(screen, menu_font)
 
                 
         

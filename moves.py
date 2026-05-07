@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 class Move:
     def __init__(self,name,power,cost,elements=None, accuracy=100, move_type="damage", effect=None, bonus_effect=None):
         self.name = name

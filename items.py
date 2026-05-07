@@ -1,4 +1,5 @@
-import pygame
+import pygame\
+
 
 class Item:
     def __init__(self, name, price):
