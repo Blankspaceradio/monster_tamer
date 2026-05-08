@@ -6,6 +6,7 @@ from items import *
 from player import *
 from battle import *
 from explore import *
+from monsterDetailsScreen import *
 
 def main():
     pygame.init()
@@ -16,6 +17,7 @@ def main():
     #Fonts
     title_font = pygame.font.SysFont('comicsans', 100)
     menu_font = pygame.font.SysFont('comicsans', 50)
+    extra_controls = pygame.font.SysFont('comicsans', 30)
 
 
     #Basic player
@@ -62,6 +64,20 @@ def main():
         100,
         formatter=lambda area: area.name
     )
+    team_menu = Menu(
+        lambda: player.team,
+        menu_font,
+        100,
+        150,
+        formatter=lambda monster: f"{monster.name} Lv{monster.level}"
+    )
+    storage_menu = Menu(
+        lambda: player.storage,
+        menu_font,
+        500,
+        150,
+        formatter=lambda monster: f"{monster.name} Lv{monster.level}"
+    )
 
 
 
@@ -95,7 +111,11 @@ def main():
                 
                 if result == "Explore":
                     state = MENU_EXPLORE
-                
+
+                elif result == "Manage Team":
+                    state = MENU_TEAM
+                    active_panel = "team"
+
                 elif result == "Shop":
                     state = MENU_SHOP
 
@@ -176,7 +196,54 @@ def main():
                 if result:
                     enemy_monster = result
 
-                
+            elif state == MENU_TEAM:
+                if active_panel == "team":
+                    result = team_menu.handle_input(event)
+
+                elif active_panel == "storage":
+                    result = storage_menu.handle_input(event)
+
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_MAIN
+
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    if active_panel == "team":
+                        monster = team_menu.get_selected()
+                    elif active_panel == "storage":
+                        monster = storage_menu.get_selected()
+                    
+                    if monster:
+                        monster_details_screen = MonsterDetailsScreen(
+                            monster,
+                            menu_font,
+                            title_font,
+                        )
+                        previous_state = state
+                        state = MONSTER_DETAILS
+
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                    active_panel = "team"
+                elif  event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                    active_panel = "storage"
+
+                if active_panel == "team" and result:
+                    player.move_to_storage(result)
+
+                if active_panel == "storage" and result:
+                    success = player.move_to_team(result)
+
+                    if not success:
+                        popup_message = "Team is full"
+                        state = POPUP
+                        previous_state= MENU_TEAM
+            
+            elif state == MONSTER_DETAILS:
+                result = monster_details_screen.handle_input(event)
+
+                if result == "back":
+                    state = MENU_TEAM
+            
+            
         
         screen.fill("black")
         if state == MENU_TITLE:
@@ -226,6 +293,20 @@ def main():
         
         elif state == MENU_ENCOUNTER:
             encounter_menu.draw(screen)
+
+        elif state == MENU_TEAM:
+            text_team_title = title_font.render('Manage Team', False, (255, 0, 0))
+            text_rect_team_title = text_team_title.get_rect(center=(SCREEN_WIDTH//2, 100))
+            
+            text_extra = extra_controls.render("Enter: Move Monster\nSpace: View Details\nESC: Back", False, (255,0,0))
+            text_rect_extra = text_extra.get_rect(center=(500, 500))
+            screen.blit(text_team_title, text_rect_team_title)
+            screen.blit(text_extra, text_rect_extra)
+            team_menu.draw(screen, active=(active_panel == "team"))
+            storage_menu.draw(screen, active=(active_panel=="storage"))
+
+        elif state == MONSTER_DETAILS:
+            monster_details_screen.draw(screen)
 
         elif state == POPUP:
             if event.type == pygame.KEYDOWN:

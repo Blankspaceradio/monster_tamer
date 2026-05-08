@@ -3,6 +3,7 @@ SCREEN_WIDTH = 1280
 MENU_TITLE = "title"
 MENU_MAIN = "main"
 MENU_TEAM = "team"
+MENU_TEAM_STORAGE = "team storage"
 MENU_SHOP = "shop"
 MENU_SHOP_INVENTORY = "shop inventory"
 MENU_PLAYER_INVENTORY = "player inventory"
@@ -20,3 +21,5 @@ BATTLE_END  = "battle_end"
 
 MENU_EXPLORE = "explore"
 MENU_ENCOUNTER = "encounter"
+
+MONSTER_DETAILS = "Monster details"

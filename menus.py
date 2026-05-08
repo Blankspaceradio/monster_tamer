@@ -32,6 +32,14 @@ class Menu:
 
         return None
 
+    def get_selected(self):
+        options = self.options_fn()
+
+        if not options:
+            return None
+        return options[self.selected]
+
+
     def titleDraw(self, screen):
         for i, option in enumerate(self.options_fn()):
             y = self.y + i * self.spacing

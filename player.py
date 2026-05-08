@@ -1,13 +1,13 @@
 import pygame
-
+from monsters import *
 class Player:
     def __init__(self,name):
         self.name = name
         self.gold = 1000
         
 
-        self.team = []
-        self.storage = []
+        self.team = [testmon, testmon]
+        self.storage = [timon, huntmon]
 
         self.inventory = {}
 
@@ -41,6 +41,22 @@ class Player:
             return True
         else:
             self.storage.append(monster)
+            return False
+        
+    def add_to_storage(self, monster):
+        self.stoage.append(monster)
+    
+    def move_to_storage(self, monster):
+        if monster in self.team:
+            self.team.remove(monster)
+            self.storage.append(monster)
+    
+    def move_to_team(self, monster):
+        if monster in self.storage and len(self.team) < 6:
+            self.storage.remove(monster)
+            self.team.append(monster)
+            return True
+        else:
             return False
 
 
