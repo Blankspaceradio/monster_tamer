@@ -49,7 +49,7 @@ class Move:
     def calculate_damage(self, user):
         damage = self.power
 
-        matching_elements = self.elements & user.elements
+        matching_elements = self.element & user.element
 
         bonus = 1 + (0.5 * len(matching_elements))
         damage *= bonus

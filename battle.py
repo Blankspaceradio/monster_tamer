@@ -13,11 +13,11 @@ class Battle:
 
         self.selected_move = None
 
-        self.action_menu = Menu(
-            lambda: ["Fight", "Item", "Run"],
-            menu_font,
-            50, 400
-        )
+       # self.action_menu = Menu(
+       #     lambda: ["Fight", "Item", "Run"],
+        #    menu_font,
+         #   50, 400
+        #)
 
         self.move_menu = Menu(
             lambda:self.player_monster.moves,
@@ -30,6 +30,9 @@ class Battle:
     def handle_input(self,event):
         if self.phase == PLAYER_TURN:
             return self.handle_player_turn(event)
+        elif self.phase == BATTLE_END:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return "battle_over"
         
     def handle_player_turn(self, event):
         result = self.move_menu.handle_input(event)
@@ -40,6 +43,8 @@ class Battle:
 
     def execute_turn(self):
         player_move = self.selected_move
+        if not self.enemy_monster.moves:
+            return
         enemy_move = random.choice(self.enemy_monster.moves)
 
         #determine turn order
@@ -74,7 +79,7 @@ class Battle:
             self.message = "You Won!"
 
     def draw(self, screen, font):
-        self.draw_monster(screen, font)
+        self.draw_monsters(screen, font)
 
         if self.phase == PLAYER_TURN:
             self.move_menu.draw(screen)
@@ -82,8 +87,8 @@ class Battle:
         self.draw_ui(screen, font)
     
     def draw_monsters(self, screen, font):
-        player_text = font.Render(
-        f"{self.player_mosnter.name} HP: {self.player_monster.hp}/{self.player_monster.max_hp}",
+        player_text = font.render(
+        f"{self.player_monster.name} HP: {self.player_monster.hp}/{self.player_monster.max_hp}",
         True,
         (255, 255,255)
         )
@@ -96,3 +101,11 @@ class Battle:
 
         screen.blit(player_text,(50, 50))
         screen.blit(enemy_text, (500, 50))
+
+    def draw_ui(self, screen,font):
+        message_text = font.render(
+            self.message,
+            True,
+            (255,255,255)
+        )
+        screen.blit(message_text, (50,350))

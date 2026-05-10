@@ -17,9 +17,17 @@ class Menu:
         self.context = context
 
     def handle_input(self, event):
-        options = self.options_fn()
+        
         if event.type != pygame.KEYDOWN:
             return None
+        
+        options = self.options_fn()
+
+        if not options:
+            return None
+        
+        if self.selected >= len(options):
+            self.selected =0
 
         if event.key == pygame.K_UP:
             self.selected = (self.selected - 1) % len(options)
@@ -57,6 +65,17 @@ class Menu:
         options = self.options_fn()
         color = (255, 0, 0) if active else (100, 100, 100)
 
+      
+
+        if not options:
+            empty_text = self.font.render(
+                "Empty",
+                True,
+                (100, 100, 100)
+            )
+            screen.blit(empty_text, (self.x, self.y))
+            return
+       
         for i, option in enumerate(options):
             y = self.y + i * self.spacing
 

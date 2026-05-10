@@ -85,7 +85,7 @@ def main():
 
     state = MENU_TITLE
    
-    active_menu = "actions"
+    
     popup_message = None
     previous_state = None
     
@@ -118,6 +118,7 @@ def main():
 
                 elif result == "Shop":
                     state = MENU_SHOP
+                    active_menu = "actions"
 
                 elif result == "Inventory":
                     state = MENU_PLAYER_INVENTORY
@@ -132,8 +133,12 @@ def main():
                 
             
             elif state == MENU_SHOP:
+                    
+
                 if active_menu == "actions":
                     result = shop_actions_menu.handle_input(event)
+                    if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                        state = MENU_MAIN
 
                     if result == "Buy":
                         active_menu = "shop inventory"
@@ -172,11 +177,17 @@ def main():
                     player.add_gold(result.price//2)
 
             elif state == BATTLE:
-                Battle.handle_input(event)
-                Battle.darw(screen, menu_font)
+
+                result = current_battle.handle_input(event)
+                if result == "battle_over":
+                    state == MENU_MAIN
+                
             
             elif state == MENU_EXPLORE:
                 result = explore_menu.handle_input(event)
+                
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_MAIN
 
                 if result:
                     selected_area = result
@@ -193,8 +204,20 @@ def main():
             
             elif state == MENU_ENCOUNTER:
                 result = encounter_menu.handle_input(event)
+
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_EXPLORE
+
                 if result:
                     enemy_monster = result
+                    player_monster = player.team[0]
+
+                    current_battle = Battle(
+                        player_monster,
+                        enemy_monster,
+                        menu_font
+                    )
+                    state = BATTLE
 
             elif state == MENU_TEAM:
                 if active_panel == "team":
@@ -272,8 +295,8 @@ def main():
             screen.blit(text_shop_gold, text_rect_gold)
             screen.blit(text_shop_title, text_rect_shop_title)
             
-            shop_actions_menu.draw(screen)
-            shop_inventory_menu.draw(screen)
+            shop_actions_menu.draw(screen, active=active_menu=="actions")
+            shop_inventory_menu.draw(screen, active=active_menu=="shop inventory")
         elif state == MENU_PLAYER_SELL_INVENTORY:
             text_shop_title = title_font.render('Inventory: SELL', False, (255, 0, 0))
             text_rect_shop_title = text_shop_title.get_rect(center=(SCREEN_WIDTH//2, 100))
@@ -282,7 +305,7 @@ def main():
             screen.blit(text_shop_gold, text_rect_gold)
             screen.blit(text_shop_title, text_rect_shop_title)
 
-            shop_actions_menu.draw(screen)
+            shop_actions_menu.draw(screen, active=active_menu=="actions")
             player_inventory_sell_menu.draw(screen)
 
         elif state == MENU_EXPLORE:
@@ -293,6 +316,9 @@ def main():
         
         elif state == MENU_ENCOUNTER:
             encounter_menu.draw(screen)
+
+        elif state == BATTLE: 
+            current_battle.draw(screen, menu_font)
 
         elif state == MENU_TEAM:
             text_team_title = title_font.render('Manage Team', False, (255, 0, 0))
