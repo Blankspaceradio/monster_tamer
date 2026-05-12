@@ -26,9 +26,10 @@ class Move:
         
         #check energy
         if user.energy < self.cost:
-            print(f"{user.name} doesn't have neough energy!")
+            print(f"{user.name} doesn't have enough energy!")
             return False
-
+        #spend energy
+        user.energy -= self.cost
         #accuracy check
         if random.randint(1,100) > self.accuracy:
             print(f"{user.name}'s {self.name} missed!")
