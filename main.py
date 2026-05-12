@@ -180,7 +180,8 @@ def main():
 
                 result = current_battle.handle_input(event)
                 if result == "battle_over":
-                    state == MENU_MAIN
+                    current_battle = None
+                    state = MENU_EXPLORE
                 
             
             elif state == MENU_EXPLORE:

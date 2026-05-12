@@ -31,8 +31,9 @@ class Battle:
         if self.phase == PLAYER_TURN:
             return self.handle_player_turn(event)
         elif self.phase == BATTLE_END:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                return "battle_over"
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return "battle_over"
         
     def handle_player_turn(self, event):
         result = self.move_menu.handle_input(event)
