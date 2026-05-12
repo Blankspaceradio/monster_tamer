@@ -93,15 +93,42 @@ class Battle:
         True,
         (255, 255,255)
         )
+        player_monster_text = font.render(
+            f"Energy: {self.player_monster.energy}/{self.player_monster.max_energy}",
+            True,
+            (255, 255,255)
+        )
 
         enemy_text = font.render(
             f"{self.enemy_monster.name} HP: {self.enemy_monster.hp}/{self.enemy_monster.max_hp}",
             True,
             (255, 255, 255)
         )
+        enemy_monster_text = font.render(
+            f"Energy: {self.enemy_monster.energy}/{self.enemy_monster.max_energy}",
+            True,
+            (255, 255,255)
+        )
+
+        stats = [
+            ("Courage", self.player_monster.courage),
+            ("Power", self.player_monster.power),
+            ("Wisdom", self.player_monster.wisdom),
+            ("Speed",self.player_monster.speed),
+        ]
 
         screen.blit(player_text,(50, 50))
+        screen.blit(player_monster_text, (50, 100))
         screen.blit(enemy_text, (500, 50))
+        screen.blit(enemy_monster_text, (500, 100))
+
+        for i, (label, value) in enumerate(stats):
+            text = font.render(
+                f"{label}: {value}",
+                True,
+                (255, 255, 255)
+            )
+            screen.blit(text, (50, 150 + i * 40))
 
     def draw_ui(self, screen,font):
         message_text = font.render(
@@ -110,3 +137,5 @@ class Battle:
             (255,255,255)
         )
         screen.blit(message_text, (50,350))
+
+    

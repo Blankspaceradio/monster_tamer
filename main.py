@@ -61,7 +61,7 @@ def main():
         lambda: [forest, mountain],
         menu_font,
         100,
-        100,
+        200,
         formatter=lambda area: area.name
     )
     team_menu = Menu(
@@ -298,6 +298,7 @@ def main():
             
             shop_actions_menu.draw(screen, active=active_menu=="actions")
             shop_inventory_menu.draw(screen, active=active_menu=="shop inventory")
+
         elif state == MENU_PLAYER_SELL_INVENTORY:
             text_shop_title = title_font.render('Inventory: SELL', False, (255, 0, 0))
             text_rect_shop_title = text_shop_title.get_rect(center=(SCREEN_WIDTH//2, 100))

@@ -3,7 +3,7 @@ import random
 
 
 class Move:
-    def __init__(self,name,power,cost,elements=None, accuracy=100, move_type="damage", effect=None, bonus_effect=None):
+    def __init__(self,name,power,cost,elements=None, accuracy=100, move_type="damage", effect=None, bonus_effect=None, target_type="enemy"):
         self.name = name
         self.power = power
         self.cost = cost
@@ -12,11 +12,18 @@ class Move:
         self.move_type = move_type
         self.effect = effect
         self.bonus_effect = bonus_effect
+        self.target_type = target_type
 
     def __str__(self):
         return f"{self.name} (Cost: {self.cost})"
 
     def use(self, user, target):
+        actual_target = target
+        if self.target_type == "self":
+            actual_target = user
+
+
+        
         #check energy
         if user.energy < self.cost:
             print(f"{user.name} doesn't have neough energy!")
@@ -30,19 +37,19 @@ class Move:
         #apply effect
         if self.move_type == "damage":
             damage = self.calculate_damage(user)
-            target.take_damage(damage)
+            actual_target.take_damage(damage)
             print(f"{user.name} used {self.name} and dealt {self.power} damage!")
 
         elif self.move_type == "heal":
-            target.heal(self.power)
-            print(f"{user.name} healed {target.name} for {self.power}!")
+            actual_target.heal(self.power)
+            print(f"{user.name} healed for {self.power}!")
         
         #custom effect hook
         if self.effect:
-            self.effect(user,target)
+            self.effect(user,actual_target)
 
         if self.element == user.element and self.bonus_effect:
-            self.bonus_effect(user,target)
+            self.bonus_effect(user,actual_target)
 
         return True
     
@@ -55,10 +62,11 @@ class Move:
         damage *= bonus
         return max(1, int(damage))
     
+    
 
 
-tackle = Move("Tackle", power=10, cost=2, elements="normal")
+tackle = Move("Tackle", power=10, cost=2, elements="none")
 
 fireball = Move("Fireball", power=15, cost=5, elements="fire")
 
-heal = Move("Heal", power=20, cost=4, elements="light", move_type="heal")
+heal = Move("Heal", power=20, cost=4, elements="none", move_type="heal", target_type="self")
