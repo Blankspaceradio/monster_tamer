@@ -5,7 +5,7 @@ class Monster:
     def __init__(
             self,
             name,
-            elements=None,
+            elements={None},
             level=1,
             max_hp=50,
             energy=10,
@@ -16,7 +16,7 @@ class Monster:
             moves=None
         ):
         self.name = name
-        self.element = set(elements) if elements else set()
+        self.elements = {e.lower() for e in elements} if elements else set()
 
         #progression
         self.level = level
@@ -71,7 +71,8 @@ class Monster:
     
 
 
-testmon = Monster("Testmon",{"fire"}, 1, 40, 20, 10, 15, 20, 25,[tackle, heal])
+testmon = Monster("Testmon",{"fire"}, 1, 40, 20, 10, 15, 20, 25,[tackle,fireball,firestream])
 moxmon = Monster("Moxmon", {"None"}, 3, 50, 15, 20, 30,40 ,50, [tackle, fireball])
 timon = Monster("Timon", {"water"}, 3, 40, 20, 40, 30, 80, 10, [tackle, heal])
-huntmon = Monster("Huntmon", {"earth"}, 1, 30, 20, 50, 40, 10, 20, [tackle, fireball])
+huntmon = Monster("Huntmon", {"earth"}, 1, 30, 20, 50, 40, 10, 20, [tackle, fireball, vine_wrap])
+steamon = Monster("Steammon", {"fire", "water"}, 1, 40, 20, 50, 40, 30, 20,[tackle, fireball, firestream])

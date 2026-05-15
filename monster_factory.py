@@ -5,7 +5,7 @@ import random
 def create_testmon(level):
     return Monster(
         name = "Testmon",
-        elements = "Fire",
+        elements = {"fire"},
         level = level,
         max_hp=random.randint(30,50) + (level * 5),
         energy=random.randint(15, 25) + (level * 5),
@@ -13,14 +13,14 @@ def create_testmon(level):
         power=random.randint(5,10) + (level * 5),
         wisdom=random.randint(5,10) + (level * 5),
         speed=random.randint(15,20) + (level * 5),
-        moves=[tackle, heal]
+        moves=[tackle]
 
     )
 
 def create_moxmon(level):
      return Monster(
         name = "Moxmon",
-        elements = "None",
+        elements = {"None"},
         level = level,
         max_hp=random.randint(30,50) + (level * 5),
         energy=random.randint(15, 25) + (level * 5),
@@ -35,7 +35,7 @@ def create_moxmon(level):
 def create_huntmon(level):
      return Monster(
         name = "Huntmon",
-        elements = "Eartj",
+        elements = {"Earth"},
         level = level,
         max_hp=random.randint(30,50) + (level * 5),
         energy=random.randint(15, 25) + (level * 5),

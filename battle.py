@@ -66,8 +66,10 @@ class Battle:
 
     def determine_turn_order(self, m1, move1,m2,move2):
         if m1.speed >= m2.speed:
+            print(f"{m1.name}: {m1.speed} vs {m2.name}: {m2.speed}")
             return m1, move1, m2, move2
         else:
+            print(f"{m1.name}: {m1.speed} vs {m2.name}: {m2.speed}")
             return m2, move2, m1, move1
         
     def check_battle_end(self):
