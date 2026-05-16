@@ -46,3 +46,10 @@ class TrainingItem(Item):
                 target.wisdom += self.train_amount
             case "Speed":
                 target.speed += self.train_amount
+
+catcher = CatchItem("Catcher", 100, 50)
+potion = HealingItem("Potion", 200,20)  
+weight = TrainingItem("Weights", 300, 5,"Power")
+
+
+shop_items = [catcher, potion, weight]

@@ -26,7 +26,7 @@ def main():
     
 
     #Shop Items
-    shop_items = [CatchItem("Catcher", 100, 50), HealingItem("Potion", 200,20),  TrainingItem("Weights", 300, 5,"Power")]
+   
 
     #Menus
     title_menu = Menu(

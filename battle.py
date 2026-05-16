@@ -1,6 +1,7 @@
 import pygame
 from constants import *
 from menus import *
+from items import *
 import random
 
 class Battle:
@@ -11,6 +12,8 @@ class Battle:
         self.phase = PLAYER_TURN
         self.message = ""
         self.player = player
+        self.rewards_given = False
+        self.end_messages = []
 
         self.selected_move = None
         self.active_menu = "actions"
@@ -118,8 +121,9 @@ class Battle:
 
     def handle_battle_end(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETRUN:
+            if event.key == pygame.K_RETURN:
                 return "battle_over"
+            
         
     def handle_player_turn(self, event):
         result = self.move_menu.handle_input(event)
@@ -165,22 +169,63 @@ class Battle:
 
         elif not self.enemy_monster.is_alive():
             self.phase = BATTLE_END
-            self.message = "You Won!"
+            self.handle_victory()
+
+    def handle_victory(self):
+        if self.rewards_given:
+            return
+        self.rewards_given = True
+        self.end_messages = []
+
+        exp_gain = self.enemy_monster.level * 10
+
+        self.player_monster.gain_exp(exp_gain)
+        self.end_messages.append(f"{self.player_monster.name} gained {exp_gain} EXP!")
+
+        #Loot
+        gold_gain = random.randint(5,20)
+
+        self.player.add_gold(gold_gain)
+
+        self.end_messages.append(f"You found {gold_gain} gold!")
+
+        if random.random() < 0.25:
+            item = potion
+
+            self.player.add_item(item)
+            self.end_messages.append(f"Found {item.name}!")
 
     def draw(self, screen, font):
         self.draw_monsters(screen, font)
 
-        if self.active_menu == "actions":
-            self.action_menu.draw(screen)
+        if self.phase == BATTLE_END:
+            for i, message in enumerate(self.end_messages):
+                text = font.render(
+                    message,
+                    True,
+                    (255, 255, 255)
+                )
+                screen.blit(text,(50, 300 + i * 40))
+            continue_text = font.render(
+                "Press ENTER to continue",
+                True,
+                (200, 200, 200)
+            )
+            screen.blit(continue_text, (50, 500))
+        
+        else:
 
-        elif self.active_menu == "moves":
-            self.move_menu.draw(screen)
+            if self.active_menu == "actions":
+                self.action_menu.draw(screen)
 
-        elif self.active_menu == "items":
-            self.item_menu.draw(screen)
+            elif self.active_menu == "moves":
+                self.move_menu.draw(screen)
 
-        elif self.active_menu == "switch":
-            self.switch_menu.draw(screen)
+            elif self.active_menu == "items":
+                self.item_menu.draw(screen)
+
+            elif self.active_menu == "switch":
+                self.switch_menu.draw(screen)
 
         self.draw_ui(screen, font)
     

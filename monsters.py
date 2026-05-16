@@ -60,12 +60,15 @@ class Monster:
         self.level += 1
 
         self.max_hp +=10
+        self.max_energy += 5
         self.power +=2
         self.wisdom += 2
         self.speed += 1
         self.courage += 1
 
         self.hp = self.max_hp
+        self.energy = self.max_energy
+        return [f"{self.name} grew to level {self.level}!"]
 
       
     
