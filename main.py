@@ -214,6 +214,7 @@ def main():
                     player_monster = player.team[0]
 
                     current_battle = Battle(
+                        player,
                         player_monster,
                         enemy_monster,
                         menu_font

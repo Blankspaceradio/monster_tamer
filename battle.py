@@ -4,20 +4,34 @@ from menus import *
 import random
 
 class Battle:
-    def __init__(self, player_monster, enemy_monster, menu_font):
+    def __init__(self, player, player_monster, enemy_monster, menu_font):
         self.player_monster = player_monster
         self.enemy_monster = enemy_monster
 
         self.phase = PLAYER_TURN
         self.message = ""
+        self.player = player
 
         self.selected_move = None
-
-       # self.action_menu = Menu(
-       #     lambda: ["Fight", "Item", "Run"],
-        #    menu_font,
-         #   50, 400
-        #)
+        self.active_menu = "actions"
+        self.action_menu = Menu(
+            lambda: ["Fight", "Item", "Switch", "Flee"],
+            menu_font,
+            50, 400
+        )
+        self.item_menu = Menu(
+            lambda: list(self.player.inventory.keys()),
+            menu_font,
+            250,400,
+            formatter=lambda item: f"{item.name} x{self.player.inventory[item]}"
+        )
+        self.switch_menu = Menu(
+            lambda:self.player.team,
+            menu_font,
+            250,
+            400,
+            formatter=lambda monster: f"{monster.name} HP:{monster.hp} EN: {monster.energy}"
+        )
 
         self.move_menu = Menu(
             lambda:self.player_monster.moves,
@@ -28,12 +42,84 @@ class Battle:
         )
     
     def handle_input(self,event):
-        if self.phase == PLAYER_TURN:
-            return self.handle_player_turn(event)
-        elif self.phase == BATTLE_END:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    return "battle_over"
+        if self.phase == BATTLE_END:
+            return self.handle_battle_end(event)
+        
+        if self.active_menu == "actions":
+            return self.handle_action_menu(event)
+        
+        elif self.active_menu == "moves":
+            return self.handle_move_menu(event)
+        
+        elif self.active_menu == "items":
+            return self.handle_item_menu(event)
+        
+        elif self.active_menu == "switch":
+            return self.handle_switch_menu(event)
+        
+    def handle_action_menu(self,event):
+        result = self.action_menu.handle_input(event)
+
+        if result == "Fight":
+            self.active_menu = "moves"
+
+        elif result == "Item":
+            self.active_menu = "items"
+
+        elif result == "Switch":
+            self.active_menu = "switch"
+
+        elif result == "Flee":
+            return "battle_over"
+        
+    def handle_move_menu(self, event):
+        result = self.move_menu.handle_input(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE:
+                self.active_menu = "actions"
+
+        if result:
+            self.selected_move = result
+
+            self.execute_turn()
+
+            self.active_menu = "actions"
+
+    def handle_switch_menu(self, event):
+        result = self.switch_menu.handle_input(event)
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE:
+                self.active_menu = "actions"
+
+        if result:
+            self.player_monster = result
+
+            self.message = (f"Go {result.name}!")
+
+            self.active_menu = "actions"
+            
+    
+    def handle_item_menu(self,event):
+        result = self.item_menu.handle_input(event)
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE:
+                self.active_menu = "actions"
+        
+        if result:
+            result.use(self.player_monster)
+
+            self.player.remove_item(result)
+
+            self.message = (f"Used {result.name}")
+
+            self.action_menu = "actions"
+
+    def handle_battle_end(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETRUN:
+                return "battle_over"
         
     def handle_player_turn(self, event):
         result = self.move_menu.handle_input(event)
@@ -84,8 +170,17 @@ class Battle:
     def draw(self, screen, font):
         self.draw_monsters(screen, font)
 
-        if self.phase == PLAYER_TURN:
+        if self.active_menu == "actions":
+            self.action_menu.draw(screen)
+
+        elif self.active_menu == "moves":
             self.move_menu.draw(screen)
+
+        elif self.active_menu == "items":
+            self.item_menu.draw(screen)
+
+        elif self.active_menu == "switch":
+            self.switch_menu.draw(screen)
 
         self.draw_ui(screen, font)
     

@@ -6,7 +6,7 @@ class Player:
         self.gold = 1000
         
 
-        self.team = [testmon, testmon]
+        self.team = [testmon, huntmon]
         self.storage = [timon, huntmon]
 
         self.inventory = {}
