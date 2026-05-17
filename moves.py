@@ -23,28 +23,33 @@ class Move:
         if self.target_type == "self":
             actual_target = user
 
-
+        messages = []
         
         #check energy
         if user.energy < self.cost:
-            print(f"{user.name} doesn't have enough energy!")
-            return False
+            return {"success": False,
+                    "messages": ["Not enough energy!"]} 
+            
         #spend energy
         user.energy -= self.cost
         #accuracy check
         if random.randint(1,100) > self.accuracy:
-            print(f"{user.name}'s {self.name} missed!")
-            return False 
+            
+            return {"success": False,
+                    "messages": [f"{user.name}'s attack missed!"]} 
         
         #apply effect
         if self.move_type == "damage":
             damage = self.calculate_damage(user)
+            messages.append(f"{user.name} used {self.name}!")
+            messages.append(f"It dealt {damage} damage!")
             actual_target.take_damage(damage)
-            print(f"{user.name} used {self.name} and dealt {damage} damage!")
+           
 
         elif self.move_type == "heal":
+            messages.append(f"{user.name} healed {self.power} HP!")
             actual_target.heal(self.power)
-            print(f"{user.name} healed for {self.power}!")
+           
         
         #custom effect hook
         if self.effect:
@@ -52,7 +57,10 @@ class Move:
         if self.elements & user.elements and self.bonus_effect:
             self.bonus_effect(user,actual_target)
 
-        return True
+        return {
+            "success": True,
+            "messages": messages
+        }
     
     def calculate_damage(self, user):
         damage = self.power
@@ -66,7 +74,7 @@ def lower_speed(user, target):
 
     if target.speed <1:
         target.speed = 1
-    print(f"{target.name}'s speed fell!")
+    
 
 
 tackle = Move("Tackle", power=10, cost=2, elements={"none"})

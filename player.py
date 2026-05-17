@@ -7,7 +7,7 @@ class Player:
         
 
         self.team = [testmon, huntmon]
-        self.storage = [timon, huntmon]
+        self.storage = [timon, huntmon, steamon]
 
         self.inventory = {}
 

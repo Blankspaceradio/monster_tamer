@@ -10,7 +10,7 @@ class Battle:
         self.enemy_monster = enemy_monster
 
         self.phase = PLAYER_TURN
-        self.message = ""
+        self.message = []
         self.player = player
         self.rewards_given = False
         self.end_messages = []
@@ -147,19 +147,18 @@ class Battle:
         )
 
         #first attack
-        first_move.use(first,second)
-
+        result = first_move.use(first,second)
+        self.message.extend(result["messages"])
         if second.is_alive():
-            second_move.use(second,first)
-        
+           result = second_move.use(second,first)
+           self.message.extend(result["messages"])
+
         self.check_battle_end()
 
     def determine_turn_order(self, m1, move1,m2,move2):
         if m1.speed >= m2.speed:
-            print(f"{m1.name}: {m1.speed} vs {m2.name}: {m2.speed}")
             return m1, move1, m2, move2
         else:
-            print(f"{m1.name}: {m1.speed} vs {m2.name}: {m2.speed}")
             return m2, move2, m1, move1
         
     def check_battle_end(self):
@@ -198,6 +197,14 @@ class Battle:
     def draw(self, screen, font):
         self.draw_monsters(screen, font)
 
+        for i, message in enumerate(self.message[-12:]):
+            text = font.render(
+                message,
+                True,
+                (255, 255, 255)
+            )
+            screen.blit(text, (460, 140 + i * 35))
+
         if self.phase == BATTLE_END:
             for i, message in enumerate(self.end_messages):
                 text = font.render(
@@ -227,7 +234,7 @@ class Battle:
             elif self.active_menu == "switch":
                 self.switch_menu.draw(screen)
 
-        self.draw_ui(screen, font)
+        #self.draw_ui(screen, font)
     
     def draw_monsters(self, screen, font):
         player_text = font.render(

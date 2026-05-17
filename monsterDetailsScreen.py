@@ -1,4 +1,5 @@
 import pygame
+from monsters import *
 
 class MonsterDetailsScreen:
     def __init__(self, monster, font, title_font):
@@ -15,13 +16,13 @@ class MonsterDetailsScreen:
         screen.blit(title, (50,30))
 
         level_text = self.font.render(
-            f"Level: {monster.level}",
+            f"Level: {monster.level}   EXP: {monster.exp}/{monster.exp_to_next_level()}",
             True,
             (255, 255, 255)
         )
         screen.blit(level_text, (50,120))
 
-        elements = ", ".join(monster.element)
+        elements = ", ".join(monster.elements)
 
         element_text = self.font.render(
             f"Elements: {elements if elements else'None'}",
@@ -52,7 +53,7 @@ class MonsterDetailsScreen:
             True,
             (255, 255, 0)
         )
-        screen.blit(moves_title, (400,120))
+        screen.blit(moves_title, (600,120))
 
         for i, move in enumerate(monster.moves):
             move_text = self.font.render(
@@ -60,7 +61,7 @@ class MonsterDetailsScreen:
                 True,
                 (255, 255, 255)
             )
-            screen.blit(move_text, (400, 170 + i * 40))
+            screen.blit(move_text, (600, 170 + i * 40))
 
     def handle_input(self,event):
         if event.type == pygame.KEYDOWN:
