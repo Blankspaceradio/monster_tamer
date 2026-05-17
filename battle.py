@@ -18,7 +18,7 @@ class Battle:
         self.selected_move = None
         self.active_menu = "actions"
         self.action_menu = Menu(
-            lambda: ["Fight", "Item", "Switch", "Flee"],
+            lambda: ["Fight", "Item", "Switch", "Rest", "Flee"],
             menu_font,
             50, 400
         )
@@ -71,6 +71,14 @@ class Battle:
 
         elif result == "Switch":
             self.active_menu = "switch"
+        
+        elif result == "Rest":
+            self.player_monster.restore_energy(10)
+            self.message.append(
+                f"{self.player_monster.name} restored energy"
+            )
+            self.enemy_turn()
+            self.check_battle_end()
 
         elif result == "Flee":
             return "battle_over"
@@ -98,7 +106,9 @@ class Battle:
         if result:
             self.player_monster = result
 
-            self.message = (f"Go {result.name}!")
+            self.message = [f"Go {result.name}!"]
+            self.enemy_turn()
+            self.check_battle_end()
 
             self.active_menu = "actions"
             
@@ -161,6 +171,21 @@ class Battle:
         else:
             return m2, move2, m1, move1
         
+    def enemy_turn(self):
+        if not self.enemy_monster.is_alive():
+            return
+        
+        enemy_move = random.choice(
+            self.enemy_monster.moves
+        )
+
+        result = enemy_move.use (
+            self.enemy_monster,
+            self.player_monster
+        )
+
+        self.message.extend(result["messages"])
+    
     def check_battle_end(self):
         if not self.player_monster.is_alive():
             self.phase = BATTLE_END

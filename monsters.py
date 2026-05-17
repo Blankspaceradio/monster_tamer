@@ -43,6 +43,16 @@ class Monster:
         if self.hp > self.max_hp:
            self.hp = self.max_hp
 
+    def heal_full(self):
+        self.hp = self.max_hp
+        self.energy = self.max_energy
+
+    def restore_energy(self,amount):
+        self.energy += amount
+
+        if self.energy > self.max_energy:
+            self.energy = self.max_energy
+
     def is_alive(self):
         return self.hp > 0
 

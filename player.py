@@ -1,5 +1,6 @@
 import pygame
 from monsters import *
+from items import *
 class Player:
     def __init__(self,name):
         self.name = name
@@ -10,6 +11,8 @@ class Player:
         self.storage = [timon, huntmon, steamon]
 
         self.inventory = {}
+        self.add_item(potion, 5)
+        self.add_item(catcher, 5)
 
     def add_item(self, item, quantity = 1):
         if item in self.inventory:
@@ -58,6 +61,10 @@ class Player:
             return True
         else:
             return False
+    
+    def heal_team(self):
+        for monster in self.team:
+            monster.heal_full()
 
 
 def inventory_formatter(item,inventory):

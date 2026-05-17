@@ -22,10 +22,6 @@ def main():
 
     #Basic player
     player = Player("Mark")
-
-    
-
-    #Shop Items
    
 
     #Menus
@@ -33,7 +29,7 @@ def main():
         ["Start Game", "Exit Game"], menu_font, SCREEN_WIDTH// 2, 250
     )
     main_menu = Menu(
-        ["Explore", "Manage Team", "Inventory", "Train", "Shop", "Back"], menu_font, 100, 150
+        ["Explore", "Manage Team", "Inventory", "Heal", "Train", "Shop", "Back"], menu_font, 100, 150
     )
     shop_actions_menu = Menu(
         ["Buy", "Sell", "Back"], menu_font, 100, 150
@@ -122,6 +118,12 @@ def main():
 
                 elif result == "Inventory":
                     state = MENU_PLAYER_INVENTORY
+                
+                elif result == "Heal":
+                    player.heal_team()
+                    state = POPUP
+                    popup_message = "Team healed"
+                    previous_state = MENU_MAIN
                 
                 elif result == "Back":
                     state = MENU_TITLE
