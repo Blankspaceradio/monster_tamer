@@ -7,6 +7,9 @@ from player import *
 from battle import *
 from explore import *
 from monsterDetailsScreen import *
+from save_system import *
+import os
+import sys
 
 def main():
     pygame.init()
@@ -17,16 +20,22 @@ def main():
     #Fonts
     title_font = pygame.font.SysFont('comicsans', 100)
     menu_font = pygame.font.SysFont('comicsans', 50)
-    extra_controls = pygame.font.SysFont('comicsans', 30)
+    
 
-
-    #Basic player
-    player = Player("Mark")
-   
-
+    if os.path.exists("save.json"):
+        player = load_game(
+        ALL_MOVES,
+        ALL_ITEMS,
+    )
+    else:
+        player = Player("Player")
+    print("LOADED ID:", id(player))
+    print("LOADED GOLD:", player.gold)
+    print(player.gold)
+    
     #Menus
     title_menu = Menu(
-        ["Start Game", "Exit Game"], menu_font, SCREEN_WIDTH// 2, 250
+        ["Continue", "New Game", "Exit Game"], menu_font, SCREEN_WIDTH// 2, 250
     )
     main_menu = Menu(
         ["Explore", "Manage Team", "Inventory", "Heal", "Shop", "Back"], menu_font, 100, 150
@@ -81,14 +90,29 @@ def main():
         150,
         formatter=lambda monster: f"{monster.name} HP: {monster.hp}"
     )
+    monster_action_menu = Menu(
+        lambda:["View Details", "Move Position", "Move to Storage"],
+        menu_font,
+        100,
+        200
+    )
+    monster_action_menu_storage = Menu(
+        lambda:["View Details", "Move to Team"],
+        menu_font,
+        100,
+        200
+    )
 
-
-
+    def shutdown_game(player):
+        save_game(player)
+        pygame.quit()
+        sys.exit()
 
 
     state = MENU_TITLE
    
-    
+    reorder_index = None
+    reordering = False
     popup_message = None
     previous_state = None
     
@@ -97,17 +121,22 @@ def main():
         log_state()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                shutdown_game(player)
+                
             
             #--TITLE MENU--
             if state == MENU_TITLE:
-                
+                if state != previous_state and state == MENU_MAIN:
+                    save_game(player)
                 result = title_menu.handle_input(event)
 
-                if result == "Start Game":
+                if result == "Continue":
+                    state = MENU_MAIN
+                elif result == "New Game":
+                    player = Player("player")
                     state = MENU_MAIN
                 elif result == "Exit Game":
-                    return
+                    shutdown_game(player)
                 
             elif state == MENU_MAIN:
                 result = main_menu.handle_input(event)
@@ -118,12 +147,16 @@ def main():
                 elif result == "Manage Team":
                     state = MENU_TEAM
                     active_panel = "team"
+                    reordering = False
+                    reorder_index = None
 
                 elif result == "Shop":
                     state = MENU_SHOP
                     active_menu = "actions"
 
                 elif result == "Inventory":
+                    print("ACTIVE ID:", id(player))
+                    print("ACTIVE GOLD:", player.gold)
                     state = MENU_PLAYER_INVENTORY
                 
                 elif result == "Heal":
@@ -144,6 +177,10 @@ def main():
 
                     if result.target_type == "monster":
                         state = MENU_ITEM_TARGET
+                    elif result.target_type == "enemy":
+                        popup_message = "This item can only be used in battle"
+                        previous_state = state
+                        state = POPUP
                     else:
                         success, message = result.use(player)
                         popup_message = message
@@ -155,7 +192,7 @@ def main():
                     state = MENU_PLAYER_INVENTORY
 
                 if result:
-                    success, message = selected_item.use( None, None, result)
+                    success, message = selected_item.use(None, result)
                     if success:
                         player.remove_item(selected_item)
 
@@ -262,20 +299,6 @@ def main():
                 if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
                     state = MENU_MAIN
 
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    if active_panel == "team":
-                        monster = team_menu.get_selected()
-                    elif active_panel == "storage":
-                        monster = storage_menu.get_selected()
-                    
-                    if monster:
-                        monster_details_screen = MonsterDetailsScreen(
-                            monster,
-                            menu_font,
-                            title_font,
-                        )
-                        previous_state = state
-                        state = MONSTER_DETAILS
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                     active_panel = "team"
@@ -283,15 +306,85 @@ def main():
                     active_panel = "storage"
 
                 if active_panel == "team" and result:
-                    player.move_to_storage(result)
+                    state = MENU_MONSTER_TEAM_ACTION
 
                 if active_panel == "storage" and result:
-                    success = player.move_to_team(result)
+                    state = MENU_MONSTER_TEAM_ACTION_STORAGE
 
+                   
+
+            elif state == MENU_MONSTER_TEAM_ACTION:
+                result = monster_action_menu.handle_input(event)
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_TEAM
+                if result == "View Details":
+                    monster = team_menu.get_selected()
+                    monster_details_screen = MonsterDetailsScreen(
+                        monster, menu_font,
+                        title_font,
+                    )
+                    previous_state = state
+                    state = MONSTER_DETAILS
+                    
+                    
+                elif result == "Move Position":
+                    reorder_index = team_menu.selected
+                    reordering = True
+                    state = MENU_TEAM_REORDER
+
+                    
+
+                elif result == "Move to Storage":
+                    monster = team_menu.get_selected()
+                    player.move_to_storage(monster)
+                    state = MENU_TEAM
+
+                
+            elif state == MENU_MONSTER_TEAM_ACTION_STORAGE:
+                result = monster_action_menu_storage.handle_input(event)
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_TEAM
+                if result == "View Details":
+                    monster = team_menu.get_selected()
+                    monster_details_screen = MonsterDetailsScreen(
+                        monster, menu_font,
+                        title_font,
+                    )
+                    previous_state = state
+                    state = MONSTER_DETAILS
+                elif result == "Move to Team":
+                    monster = storage_menu.get_selected()
+                    success = player.move_to_team(monster)
+                    
                     if not success:
                         popup_message = "Team is full"
                         state = POPUP
                         previous_state= MENU_TEAM
+                    state = MENU_TEAM
+
+
+            elif state == MENU_TEAM_REORDER:
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key in (pygame.K_ESCAPE, pygame.K_BACKSPACE):
+                        reorder_index = None
+                        reordering = False
+                        state = MENU_TEAM
+                        reorder_index = None
+                result = team_menu.handle_input(event)
+                
+                if result:
+                    target_index = team_menu.selected
+                    
+                    player.swap_team_positions(
+                        reorder_index,
+                        target_index
+                    )
+
+                    reorder_index = None
+                    reordering = False
+                    state = MENU_TEAM
+
             
             elif state == MONSTER_DETAILS:
                 result = monster_details_screen.handle_input(event)
@@ -353,6 +446,9 @@ def main():
 
         elif state == MENU_ITEM_TARGET:
             item_target_menu.draw(screen)
+        
+        elif state == MENU_TEAM_REORDER:
+            team_menu.draw(screen)
 
         elif state == BATTLE: 
             current_battle.draw(screen, menu_font)
@@ -360,13 +456,14 @@ def main():
         elif state == MENU_TEAM:
             text_team_title = title_font.render('Manage Team', False, (255, 0, 0))
             text_rect_team_title = text_team_title.get_rect(center=(SCREEN_WIDTH//2, 100))
-            
-            text_extra = extra_controls.render("Enter: Move Monster\nSpace: View Details\nESC: Back", False, (255,0,0))
-            text_rect_extra = text_extra.get_rect(center=(500, 500))
             screen.blit(text_team_title, text_rect_team_title)
-            screen.blit(text_extra, text_rect_extra)
             team_menu.draw(screen, active=(active_panel == "team"))
             storage_menu.draw(screen, active=(active_panel=="storage"))
+
+        elif state == MENU_MONSTER_TEAM_ACTION:
+            monster_action_menu.draw(screen)
+        elif state == MENU_MONSTER_TEAM_ACTION_STORAGE:
+            monster_action_menu_storage.draw(screen)
 
         elif state == MONSTER_DETAILS:
             monster_details_screen.draw(screen)

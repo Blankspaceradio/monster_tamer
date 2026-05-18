@@ -118,6 +118,47 @@ class Monster:
         self.training_points_used += 1
 
         return True, f"{stat} increased!"
+    
+    def to_dict(self):
+
+        return {
+            "name": self.name,
+            "level": self.level,
+            "exp": self.exp,
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "energy": self.energy,
+            "max_energy": self.max_energy,
+            "courage": self.courage,
+            "power": self.power,
+            "wisdom": self.wisdom,
+            "speed": self.speed,
+            "elements": list(self.elements),
+            "moves": [move.name for move in self.moves],
+        }
+    @classmethod
+    def from_dict(cls, data, move_lookup):
+        moves = [move_lookup[name] for name in data["moves"]]
+
+        monster = cls(
+            data["name"],
+             set(data["elements"]),
+            data["level"],
+            data["max_hp"],
+            data["max_energy"],
+            data["courage"],
+            data["power"],
+            data["wisdom"],
+            data["speed"],
+            moves
+        )
+
+        monster.hp = data["hp"]
+        monster.energy = data["energy"]
+        monster.exp = data["exp"]
+
+        return monster
+        
 
       
     

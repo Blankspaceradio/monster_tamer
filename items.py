@@ -1,5 +1,6 @@
 import pygame
 from monsters import *
+from constants import *
 import random
 
 class Item:
@@ -28,16 +29,15 @@ class CatchItem(Item):
         self.capture_bonus = capture_bonus
 
        
-    def use(self, battle, user, target):
-            print("Trying capture", target.name)
+    def use(self, user, target, battle=None):
+            if battle is None:
+                return False, "You can only use this in battle"
             success = target.attempt_capture(self.capture_bonus)
-            print("TARGET:", target.name)
-            print("CAPTURE ROLL:", success)
 
             if success:
                 battle.player.add_to_team(target)
 
-                battle.phase = "battle end"
+                battle.phase = BATTLE_END
                 battle.end_messages = [
                     f"{target.name} was captured!"
                 ]
@@ -49,21 +49,24 @@ class HealingItem(Item):
         super().__init__(name,price, target_type="monster")
         self.heal_amount = heal_amount
 
-    def use(self,battle, user, target):
-        if user.hp < user.max_hp:
+    def use(self, user, target, battle=None):
+        actual_target = target if target is not None else user
         
-            user.heal(20)
+        if actual_target is None:
+            return False, "No target selected"
+            
+        if actual_target.hp >= actual_target.max_hp:
+            return False, f"{actual_target.name} is already fully healed"
+        actual_target.heal(20)
 
-            return True, f"{user.name} healed 20!"
-        else:
-            return False, f"{user.name} is already fulled healed"
+        return True, f"{actual_target.name} healed 20!"
 
 class TrainingItem(Item):
     def __init__(self,name,price, stat):
         super().__init__(name,price, target_type="monster")
         self.stat = stat
 
-    def use(self,battle, user, target):
+    def use(self,user, target, battle=None):
         return target.train_stat(self.stat)
 
 catcher = CatchItem("Catcher", 100, 50)
@@ -76,3 +79,14 @@ jumprope = TrainingItem("Jump Rope", 300, "energy")
 heartstone = TrainingItem("Heart Stone", 300, "hp")
 
 shop_items = [catcher, potion, weight, treadmill, book, punchingbag, jumprope, heartstone]
+
+ALL_ITEMS = {
+    "Potion": potion,
+    "Catcher": catcher,
+    "Weight": weight,
+    "Book": book,
+    "Treadmill": treadmill,
+    "Punching Bag": punchingbag,
+    "Jump Rope": jumprope,
+    "Heart Stone": heartstone,
+}

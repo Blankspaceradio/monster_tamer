@@ -86,3 +86,12 @@ heal = Move("Heal", power=20, cost=4, elements={"none"}, move_type="heal", targe
 vine_wrap = Move("Vine Wrap", power=10, cost=5, elements={"earth"}, bonus_effect=lower_speed)
 
 firestream = Move("Firestream", power=5, cost=3,elemental_bonuses={"fire":5, "water":5})
+
+
+ALL_MOVES = {
+    "Tackle": tackle,
+    "Fireball": fireball,
+    "Heal": heal,
+    "Vine Wrap": vine_wrap,
+    "Firestream": firestream,
+}

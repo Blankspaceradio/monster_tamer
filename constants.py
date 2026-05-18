@@ -25,3 +25,7 @@ MENU_ENCOUNTER = "encounter"
 MONSTER_DETAILS = "Monster details"
 
 MENU_ITEM_TARGET = "item target"
+MENU_MONSTER_TEAM_ACTION = "monster team action"
+MENU_MONSTER_TEAM_ACTION_STORAGE = "monster team action storage"
+MENU_TEAM_REORDER = "menu team reorder"
+

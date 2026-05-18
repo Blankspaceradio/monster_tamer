@@ -1,0 +1,118 @@
+{
+    "player": {
+        "gold": 1000,
+        "team": [
+            {
+                "name": "Testmon",
+                "level": 1,
+                "exp": 0,
+                "hp": 40,
+                "max_hp": 40,
+                "energy": 20,
+                "max_energy": 20,
+                "courage": 10,
+                "power": 15,
+                "wisdom": 20,
+                "speed": 25,
+                "elements": [
+                    "fire"
+                ],
+                "moves": [
+                    "Tackle",
+                    "Fireball",
+                    "Firestream"
+                ]
+            },
+            {
+                "name": "Huntmon",
+                "level": 1,
+                "exp": 0,
+                "hp": 30,
+                "max_hp": 30,
+                "energy": 20,
+                "max_energy": 20,
+                "courage": 50,
+                "power": 40,
+                "wisdom": 10,
+                "speed": 20,
+                "elements": [
+                    "earth"
+                ],
+                "moves": [
+                    "Tackle",
+                    "Fireball",
+                    "Vine Wrap"
+                ]
+            },
+            {
+                "name": "Huntmon",
+                "level": 1,
+                "exp": 0,
+                "hp": 30,
+                "max_hp": 30,
+                "energy": 20,
+                "max_energy": 20,
+                "courage": 50,
+                "power": 40,
+                "wisdom": 10,
+                "speed": 20,
+                "elements": [
+                    "earth"
+                ],
+                "moves": [
+                    "Tackle",
+                    "Fireball",
+                    "Vine Wrap"
+                ]
+            }
+        ],
+        "storage": [
+            {
+                "name": "Timon",
+                "level": 3,
+                "exp": 0,
+                "hp": 40,
+                "max_hp": 40,
+                "energy": 20,
+                "max_energy": 20,
+                "courage": 40,
+                "power": 30,
+                "wisdom": 80,
+                "speed": 10,
+                "elements": [
+                    "water"
+                ],
+                "moves": [
+                    "Tackle",
+                    "Heal"
+                ]
+            },
+            {
+                "name": "Steamon",
+                "level": 1,
+                "exp": 0,
+                "hp": 40,
+                "max_hp": 40,
+                "energy": 20,
+                "max_energy": 20,
+                "courage": 50,
+                "power": 40,
+                "wisdom": 30,
+                "speed": 20,
+                "elements": [
+                    "fire",
+                    "water"
+                ],
+                "moves": [
+                    "Tackle",
+                    "Fireball",
+                    "Firestream"
+                ]
+            }
+        ],
+        "inventory": {
+            "Potion": 5,
+            "Catcher": 5
+        }
+    }
+}

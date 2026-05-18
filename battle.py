@@ -126,16 +126,12 @@ class Battle:
         
         selected_item = result
         
-        print("SELECTED ITEM:", selected_item)
-        print("ITEM TYPE:", type(selected_item))
-        print("ITEM NAME:", getattr(selected_item, "name", None))
-        print("HAS USE METHOD:", hasattr(selected_item, "use"))
-        print("USE METHOD:", selected_item.use)
+        
         #Capture items
         outcome = selected_item.use(
-            self,
             self.player_monster,
-            self.enemy_monster
+            self.enemy_monster,
+            self
         )
         if outcome is None:
             self.message = ["Nothing happened!"]
@@ -241,7 +237,7 @@ class Battle:
 
             self.player.add_item(item)
             self.end_messages.append(f"Found {item.name}!")
-
+        
     def draw(self, screen, font):
         self.draw_monsters(screen, font)
 
