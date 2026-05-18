@@ -23,3 +23,5 @@ MENU_EXPLORE = "explore"
 MENU_ENCOUNTER = "encounter"
 
 MONSTER_DETAILS = "Monster details"
+
+MENU_ITEM_TARGET = "item target"

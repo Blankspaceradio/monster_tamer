@@ -1,5 +1,6 @@
 import pygame
 from moves import *
+import random
 
 class Monster:
     def __init__(
@@ -35,6 +36,18 @@ class Monster:
         #combat
         self.moves = moves if moves else []
 
+        #training
+        self.training_bonus = {
+            "hp": 0,
+            "energy": 0,
+            "courage": 0,
+            "power": 0,
+            "wisdom": 0,
+            "speed": 0
+        }
+
+        self.training_points_used = 0
+
     def take_damage(self, amount):
         self.hp = max(0, self.hp-amount)
 
@@ -55,6 +68,15 @@ class Monster:
 
     def is_alive(self):
         return self.hp > 0
+    
+    def attempt_capture(self, capture_bonus=0):
+
+            base_chance = 50 - (self.level *5)
+            chance = base_chance + capture_bonus
+            chance = max(5, min(95, chance))
+            roll = random.randint(1, 100)
+
+            return roll <= chance
 
     def gain_exp(self,amount):
         self.exp += amount
@@ -79,6 +101,23 @@ class Monster:
         self.hp = self.max_hp
         self.energy = self.max_energy
         return [f"{self.name} grew to level {self.level}!"]
+    
+    def train_stat(self,stat):
+        if self.training_points_used >= 5:
+            return False, "Training limit reached!"
+        
+        if self.training_bonus[stat] >= 10:
+            return False, f"{stat} is already max trained!"
+        
+        setattr(self, 
+                stat, 
+                getattr(self, stat) + 5
+                )
+        
+        self.training_bonus[stat] += 5
+        self.training_points_used += 1
+
+        return True, f"{stat} increased!"
 
       
     
@@ -88,4 +127,4 @@ testmon = Monster("Testmon",{"fire"}, 1, 40, 20, 10, 15, 20, 25,[tackle,fireball
 moxmon = Monster("Moxmon", {"None"}, 3, 50, 15, 20, 30,40 ,50, [tackle, fireball])
 timon = Monster("Timon", {"water"}, 3, 40, 20, 40, 30, 80, 10, [tackle, heal])
 huntmon = Monster("Huntmon", {"earth"}, 1, 30, 20, 50, 40, 10, 20, [tackle, fireball, vine_wrap])
-steamon = Monster("Steammon", {"fire", "water"}, 1, 40, 20, 50, 40, 30, 20,[tackle, fireball, firestream])
+steamon = Monster("Steamon", {"fire", "water"}, 1, 40, 20, 50, 40, 30, 20,[tackle, fireball, firestream])

@@ -29,7 +29,7 @@ def main():
         ["Start Game", "Exit Game"], menu_font, SCREEN_WIDTH// 2, 250
     )
     main_menu = Menu(
-        ["Explore", "Manage Team", "Inventory", "Heal", "Train", "Shop", "Back"], menu_font, 100, 150
+        ["Explore", "Manage Team", "Inventory", "Heal", "Shop", "Back"], menu_font, 100, 150
     )
     shop_actions_menu = Menu(
         ["Buy", "Sell", "Back"], menu_font, 100, 150
@@ -73,6 +73,13 @@ def main():
         500,
         150,
         formatter=lambda monster: f"{monster.name} Lv{monster.level}"
+    )
+    item_target_menu = Menu(
+        lambda: player.team,
+        menu_font,
+        300,
+        150,
+        formatter=lambda monster: f"{monster.name} HP: {monster.hp}"
     )
 
 
@@ -132,7 +139,29 @@ def main():
                 result = player_inventory_menu.handle_input(event)
                 if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
                     state = MENU_MAIN
-                
+                elif result:
+                    selected_item = result
+
+                    if result.target_type == "monster":
+                        state = MENU_ITEM_TARGET
+                    else:
+                        success, message = result.use(player)
+                        popup_message = message
+                        previous_state = state
+            
+            elif state == MENU_ITEM_TARGET:
+                result = item_target_menu.handle_input(event)
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE):
+                    state = MENU_PLAYER_INVENTORY
+
+                if result:
+                    success, message = selected_item.use( None, None, result)
+                    if success:
+                        player.remove_item(selected_item)
+
+                    popup_message = message
+                    previous_state = MENU_PLAYER_INVENTORY
+                    state = POPUP
             
             elif state == MENU_SHOP:
                     
@@ -321,6 +350,9 @@ def main():
         
         elif state == MENU_ENCOUNTER:
             encounter_menu.draw(screen)
+
+        elif state == MENU_ITEM_TARGET:
+            item_target_menu.draw(screen)
 
         elif state == BATTLE: 
             current_battle.draw(screen, menu_font)

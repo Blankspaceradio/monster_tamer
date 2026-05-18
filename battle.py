@@ -2,6 +2,7 @@ import pygame
 from constants import *
 from menus import *
 from items import *
+from player import *
 import random
 
 class Battle:
@@ -75,7 +76,7 @@ class Battle:
         elif result == "Rest":
             self.player_monster.restore_energy(10)
             self.message.append(
-                f"{self.player_monster.name} restored energy"
+                f"{self.player_monster.name} restored 10 energy"
             )
             self.enemy_turn()
             self.check_battle_end()
@@ -120,14 +121,36 @@ class Battle:
             if event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE:
                 self.active_menu = "actions"
         
-        if result:
-            result.use(self.player_monster)
+        if not result :
+            return
+        
+        selected_item = result
+        
+        print("SELECTED ITEM:", selected_item)
+        print("ITEM TYPE:", type(selected_item))
+        print("ITEM NAME:", getattr(selected_item, "name", None))
+        print("HAS USE METHOD:", hasattr(selected_item, "use"))
+        print("USE METHOD:", selected_item.use)
+        #Capture items
+        outcome = selected_item.use(
+            self,
+            self.player_monster,
+            self.enemy_monster
+        )
+        if outcome is None:
+            self.message = ["Nothing happened!"]
+            return
+        success, message = outcome
+        self.player.remove_item(selected_item)
 
-            self.player.remove_item(result)
+        self.message.extend([message])
 
-            self.message = (f"Used {result.name}")
+        if self.phase != BATTLE_END:
+            self.enemy_turn()
+            self.check_battle_end()
 
-            self.action_menu = "actions"
+        self.active_menu = "actions"
+        
 
     def handle_battle_end(self, event):
         if event.type == pygame.KEYDOWN:
