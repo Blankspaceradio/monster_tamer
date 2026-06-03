@@ -2,10 +2,10 @@
 
 
 ## Description
-This is my final or capstone project for boot.dev. As the name implies it's a monster tamer game. A very simple monster tamer. There are a couple monsters, moves, and items to use. It also has a capture system so you can catch new mosnters.
+As the name implies it's a monster tamer game. There are a couple monsters, moves, and items to use. It also has a capture system so you can catch new mosnters.
 
 ## Motivation 
-My motivation for making this specific project, besides it beign the final/capstone project for boot.dev, was a mix of being a fan of monster tamers, i.e. Pokemon and Digimon, and a bit of nostalgia for the Chaotic TCG that came out in 2006 and lasted until 2012. Which shaped some of the moves for this game. Though, after creating this project it was announced that the Chaotic TCG is relaunching in October of 2026 for hobby stores and Janurary of 2027 for big box stores. YAY!
+My motivation for making this specific project was a mix of being a fan of monster tamers, i.e. Pokemon and Digimon, and a bit of nostalgia for the Chaotic TCG that came out in 2006 and lasted until 2012. Which shaped some of the moves for this game. Though, after creating this project it was announced that the Chaotic TCG is relaunching in October of 2026 for hobby stores and Janurary of 2027 for big box stores. YAY!
 
 
 ## Quick Start
