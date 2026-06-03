@@ -1,4 +1,4 @@
-This is my final or capstone project for boot.dev. As the name implies it's a monster tamer game.
+H1: This is my final or capstone project for boot.dev. As the name implies it's a monster tamer game.
 
 A very simple monster tamer.
 
